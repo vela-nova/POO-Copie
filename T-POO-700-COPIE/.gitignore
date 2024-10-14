@@ -2,7 +2,3 @@
 .env
 .env.*
 
-# Fichiers Docker
-Dockerfile
-docker-compose.yml
-*.dockerfile
