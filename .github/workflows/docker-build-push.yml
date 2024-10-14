@@ -31,7 +31,7 @@ jobs:
         context: ./time_manager
         file: ./time_manager/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/time_manager_backend:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/time_manager:latest
 
     - name: Build and push frontend
       uses: docker/build-push-action@v5
