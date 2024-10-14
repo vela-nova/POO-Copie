@@ -11,7 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
-    image: hanene.triaa/time_manager_backend:latest
+    image: hanenetriaa/time_manager_backend:latest
     ports:
       - "4000:4000"
     environment:
@@ -24,7 +24,7 @@ services:
       - .env
 
   frontend:
-    image: hanene.triaa/time_manager_frontend:latest
+    image: hanenetriaa/time_manager_frontend:latest
     ports:
       - "4001:80"
 
