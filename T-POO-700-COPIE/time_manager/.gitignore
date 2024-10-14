@@ -30,6 +30,6 @@ time_manager-*.tar
 .env.*
 
 # Fichiers Docker
-Dockerfile
+
 docker-compose.yml
 *.dockerfile
