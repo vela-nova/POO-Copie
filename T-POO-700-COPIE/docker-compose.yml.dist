@@ -11,10 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
-    image: elixir:1.14-alpine
-    build:
-      context: ./time_manager
-      dockerfile: Dockerfile
+    image: hanene.triaa/time_manager_backend:latest
     ports:
       - "4000:4000"
     environment:
@@ -27,10 +24,7 @@ services:
       - .env
 
   frontend:
-    image: node:16-alpine
-    build:
-      context: ./time_manager_front
-      dockerfile: Dockerfile
+    image: hanene.triaa/time_manager_frontend:latest
     ports:
       - "4001:80"
 
