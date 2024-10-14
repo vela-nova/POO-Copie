@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  DOCKER_HUB_USERNAME: hanenetriaa  # Ajoutez cette ligne pour définir le nom d'utilisateur Docker Hub
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
