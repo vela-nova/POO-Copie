@@ -1,4 +1,4 @@
-name: Docker Build and Push
+name: Back Docker Build and Push
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  front-build-and-push:
+  back-build-and-push:
     runs-on: ubuntu-latest
     steps:
 
@@ -25,7 +25,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v6
       with:
-        context: "{{defaultContext}}:time_manager_front"
+        context: "{{defaultContext}}:time_manager"
         file: ./Dockerfile
         push: true
-        tags: aminhelloworld/timemanager-front:latest
+        tags: aminhelloworld/timemanager-back:latest
