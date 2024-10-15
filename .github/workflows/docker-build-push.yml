@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_HUB_USERNAME: hanenetriaa  # Ajoutez cette ligne pour définir le nom d'utilisateur Docker Hub
+  DOCKERHUB_USERNAME: hanenetriaa 
 
 jobs:
   build-and-push:
@@ -27,6 +27,7 @@ jobs:
     - name: Build and push backend
       uses: docker/build-push-action@v5
       with:
+        context: ./time_manager
         file: ./time_manager/Dockerfile
         push: true
         tags: ${{ env.DOCKER_HUB_USERNAME }}/time_manager:latest
@@ -34,6 +35,7 @@ jobs:
     - name: Build and push frontend
       uses: docker/build-push-action@v5
       with:
+        context: ./time_manager_front
         file: ./time_manager_front/Dockerfile
         push: true
         tags: ${{ env.DOCKER_HUB_USERNAME }}/time_manager_frontend:latest
