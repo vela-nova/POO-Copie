@@ -1,4 +1,4 @@
-FROM node:14 as build-stage
+FROM node:lts-alpine as build-stage
 
 COPY . /var/www
 WORKDIR /var/www
