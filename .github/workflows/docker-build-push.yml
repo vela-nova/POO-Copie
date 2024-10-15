@@ -27,14 +27,14 @@ jobs:
     - name: Build and push backend
       uses: docker/build-push-action@v5
       with:
-        file: ./Dockerfile
+        file: ./time_manager/Dockerfile
         push: true
         tags: ${{ env.DOCKER_HUB_USERNAME }}/time_manager:latest
 
     - name: Build and push frontend
       uses: docker/build-push-action@v5
       with:
-        file: ./Dockerfile
+        file: ./time_manager_front/Dockerfile
         push: true
         tags: ${{ env.DOCKER_HUB_USERNAME }}/time_manager_frontend:latest
 
