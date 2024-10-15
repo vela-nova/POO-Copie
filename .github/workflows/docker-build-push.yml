@@ -28,4 +28,4 @@ jobs:
         context: "{{defaultContext}}:time_manager_front"
         file: ./Dockerfile
         push: true
-        tags: user/app:latest
+        tags: aminhelloworld/timemanager-front:latest
