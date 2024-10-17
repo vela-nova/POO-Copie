@@ -1,86 +1,70 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { updateUser, deleteUser, user, userId, email, username } from '@/services/userService';
 
-<script>
-import { username, email, updateUser } from './utils';
+const updateEmail = ref('');
+const updateUsername = ref('');
+const errorMessage = ref('');
+
+onMounted(() => {
+  if (user.value) {
+    updateEmail.value = user.value.email;
+    updateUsername.value = user.value.username;
+  }
+});
+
+const handleUpdateUser = async () => {
+  errorMessage.value = '';
+  email.value = updateEmail.value;
+  username.value = updateUsername.value;
+  try {
+    await updateUser();
+    errorMessage.value = 'User updated successfully';
+  } catch (error) {
+    errorMessage.value = `Failed to update user: ${error.message}`;
+  }
+};
+
+const handleDeleteUser = async () => {
+  errorMessage.value = '';
+  if (confirm('Are you sure you want to delete this user?')) {
+    try {
+      await deleteUser();
+      errorMessage.value = 'User deleted successfully';
+    } catch (error) {
+      errorMessage.value = `Failed to delete user: ${error.message}`;
+    }
+  }
+};
 </script>
 
 <template>
-    <div class="modify-user">
-        <h1>Modify User</h1>
-        <form @submit.prevent="updateUser">
-            <div>
-                <label for="username">Username:</label>
-                <input type="text" id="username" v-model="username" required>
-            </div>
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" id="email" v-model="email" required>
-            </div>
-            <button type="submit">Create</button>
-        </form>
-    </div>
+  <div class="modify-user">
+    <h1>Modify User</h1>
+    <form @submit.prevent="handleUpdateUser">
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" v-model="updateUsername" required>
+      </div>
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" v-model="updateEmail" required>
+      </div>
+      <button type="submit">Update</button>
+    </form>
+    <button @click="handleDeleteUser" class="delete-button">Delete User</button>
+    <p v-if="errorMessage" :class="{ 'error': errorMessage.includes('Failed'), 'success': !errorMessage.includes('Failed') }">
+      {{ errorMessage }}
+    </p>
+  </div>
 </template>
-
 
 <style scoped>
 
-.modify-user{
-    width: 50%;
-    margin: 0 auto;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
+.error {
+  color: red;
 }
-
-.modify-user h1 {
-    text-align: center;
-    font-size: 40px;
-}
-
-.modify-user form div {
-    margin-bottom:10%;
-}
-
-.modify-user label {
-    display: block;
-    margin-bottom: 5px;
-    text-align: left;
-}
-
-.modify-user input {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-
-.modify-user button{
-    background-color: #fbeee0;
-    border: 2px solid #422800;
-    border-radius: 30px;
-    box-shadow: #422800 2px 2px 0 0;
-    color: #422800;
-    cursor: pointer;
-    display: inline-block;
-    font-weight: 600;
-    font-size: 18px;
-    padding: 0 18px;
-    line-height: 50px;
-    text-align: center;
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    min-width: 30%;
-  
-}
-
-button:hover {
-  background-color: #f6efe8;
-}
-
-button:active {
-  box-shadow: #422800 2px 2px 0 0;
-  transform: translate(2px, 2px);
+.success {
+  color: green;
 }
 </style>

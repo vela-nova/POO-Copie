@@ -1,5 +1,5 @@
 <script setup>
-import { creatUsername, creatEmail, createUser } from './utils';
+import{creatUsername, creatEmail, createUser} from '@/services/userService'
 </script>
 
 <template>

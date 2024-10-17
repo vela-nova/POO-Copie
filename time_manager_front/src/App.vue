@@ -1,6 +1,6 @@
 <script setup>
 import logo from './assets/logo.png';
-import { switchComponent, components, currentComponent } from './components/utils';
+import { switchComponent, components, currentComponent } from '@/services/componentService';
 
 </script>
 

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, markRaw } from 'vue'
-import {user, userId} from '@/components/utils'
+import {user, userId} from '@/services/userService'
 import GetUser from './GetUser.vue';
 import CreatUser from './CreatUser.vue';
 import ModifyUser from './ModifyUser.vue';
@@ -17,6 +17,7 @@ const switchComponent = (component) => {
   navValue.value = component;
 };
 console.log(navValue)
+
 </script>
 
 <template>

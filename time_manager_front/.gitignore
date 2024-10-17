@@ -1,10 +1,7 @@
 # Fichiers .env
 .env
+.env.*
 
-
-# Fichiers Docker
-docker-compose.yml
-*.dockerfile
 # Logs
 logs
 *.log
@@ -13,8 +10,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-package-lock.json
 
 node_modules
 .DS_Store
@@ -35,5 +30,6 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
 
 *.tsbuildinfo

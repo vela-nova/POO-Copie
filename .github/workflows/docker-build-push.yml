@@ -29,6 +29,8 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: aminhelloworld/timemanager-front:latest
+        build-args: VITE_BACKEND_URL=http://localhost:4000
+
 
   back-build-and-push:
     runs-on: ubuntu-latest
@@ -55,9 +57,21 @@ jobs:
         tags: aminhelloworld/timemanager-back:latest
 
 
-  deploy:
+  deploy-back:
     needs: [front-build-and-push, back-build-and-push]
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy to production
-      run: echo "Deploying to production..."
+
+    - name: install ssh keys
+      run: |
+        echo installing ssh keys
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.REMOTE_SERVER_ADDRESS }} > ~/.ssh/known_hosts
+
+    - name: ssh connect
+      run: |
+        echo ssh connect
+        ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "echo connected"
+        sudo docker kill timemanager-back
+        docker run -d --name timemanager-back -e DATABASE_URL=postgres://postgres:postgres123@51.210.149.235:5432/time_manager_prod -p 4000:4000 aminhelloworld/timemanager-back:latest

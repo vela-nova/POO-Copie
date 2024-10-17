@@ -1,0 +1,7 @@
+services:
+  frontend:
+    image: aminhelloworld/timemanager-front:latest
+    ports:
+      - "4001:80"
+
+

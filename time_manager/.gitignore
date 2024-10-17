@@ -28,8 +28,3 @@ time_manager-*.tar
 # Fichiers .env
 .env
 .env.*
-
-# Fichiers Docker
-
-docker-compose.yml
-*.dockerfile

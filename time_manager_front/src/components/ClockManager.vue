@@ -1,6 +1,8 @@
 <script setup>
-import { userId } from './utils';
-import { clockStatus, creatClock, clockTime, switchComponent } from './utils';
+import { ref } from 'vue';
+import { userId } from '@/services/userService';
+import { clockStatus, creatClock, clockTime } from '@/services/clockService';
+import { switchComponent } from '@/services/componentService';
 
 const clock = async () => {
     if (clockStatus.value) {
@@ -9,15 +11,13 @@ const clock = async () => {
         clockTime.value = new Date().toLocaleString();
     }
     clockStatus.value = !clockStatus.value;
-    await creatClock()
+    await creatClock();
 };
 
 const refresh = () => {
     clockTime.value = null;
     clockStatus.value = false;
 };
-
-
 </script>
 
 <template>
@@ -32,7 +32,7 @@ const refresh = () => {
             <p v-else>No work period in progress</p>
             <p>Clock In Status: {{ clockStatus ? 'Active' : 'Inactive' }}</p>
             <button @click="clock">{{ clockStatus ? 'Clock Out' : 'Clock In' }}</button>
-            <button @click="refresh = null">Reset</button>
+            <button @click="refresh">Reset</button>
         </div>
     </div>
 </template>
