@@ -73,7 +73,7 @@ jobs:
       run: |
         echo ssh connect
         ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker kill timemanager-back || true"
-        ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker run -d --name timemanager-back -e DATABASE_URL=postgres://postgres:postgres123@51.210.149.235:5432/time_manager_prod -p 4000:4000 aminhelloworld/timemanager-back:latest"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker run -d --rm --name timemanager-back -e DATABASE_URL=postgres://postgres:postgres123@51.210.149.235:5432/time_manager_prod -p 4000:4000 aminhelloworld/timemanager-back:latest"
 
 
   deploy-front:
@@ -92,4 +92,4 @@ jobs:
       run: |
         echo ssh connect
         ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker kill timemanager-front || true"
-        ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker run -d --name timemanager-front -p 4001:80 aminhelloworld/timemanager-front:latest"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker run -d --rm --name timemanager-front -p 4001:80 aminhelloworld/timemanager-front:latest"
