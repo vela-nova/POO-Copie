@@ -22,9 +22,22 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['workingTimeDeleted', 'workingTimeUpdated']);
+function formatDate(date) {
+  return date.toISOString().split('T')[0] + 'T00:00:00';
+}
 
-const startDate = ref(new Date(props.start));
-const endDate = ref(new Date(props.end));
+const today = new Date();
+
+const startOfWeek = new Date(today);
+startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
+
+const endOfWeek = new Date(startOfWeek);
+endOfWeek.setDate(startOfWeek.getDate() + 6);
+endOfWeek.setHours(23, 59, 59);
+
+
+const startDate = ref(formatDate(startOfWeek));
+const endDate = ref(endOfWeek.toISOString().replace('Z', ''));
 
 const isEditing = ref(false);
 
@@ -93,7 +106,7 @@ const updateEndDate = (event) => {
             <p>{{ formattedStartDate.time }}</p>
         </div>
         <div class="wt_seg" v-else>
-            <input type="datetime-local" :value="startDate.toISOString().substr(0,16)" @input="updateStartDate" />
+            <input type="datetime-local" :value="startDate.toString()" @input="updateStartDate" />
         </div>
         <p>→</p>
         <div class="wt_seg" v-if="!isEditing && formattedEndDate">
@@ -102,7 +115,7 @@ const updateEndDate = (event) => {
             <p>{{ formattedEndDate.time }}</p>
         </div>
         <div class="wt_seg" v-else>
-            <input type="datetime-local" :value="endDate.toISOString().substr(0,16)" @input="updateEndDate" />
+            <input type="datetime-local" :value="endDate.toString()" @input="updateEndDate" />
         </div>
         <div class="wt_seg">
             <span>User ID: {{ props.userId }}</span>

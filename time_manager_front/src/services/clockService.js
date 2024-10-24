@@ -1,14 +1,14 @@
 import { ref } from 'vue';
 import api from './api';
-import { userId } from './userService';
+
+const userId = ref(localStorage.getItem('userId'));
 
 export const clockTime = ref('');
-export const clockStatus = ref(false);
 
-export const creatClock = async () => {
+export const creatClock = async (clockStatus) => {
   try {
     const response = await api.post(`/clocks/${userId.value}`, {
-      clock: { status: clockStatus.value },
+      clock: { status: clockStatus },
       userID: userId.value
     });
     return response.data.data;

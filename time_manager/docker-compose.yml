@@ -1,7 +1,0 @@
-services:
-  backend:
-    image: aminhelloworld/timemanager-back:latest
-    ports:
-      - "4000:4000"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}

@@ -1,121 +1,205 @@
 <script setup>
+import { onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import logo from './assets/logo.png';
-import { switchComponent, components, currentComponent } from '@/services/componentService';
+import profileLogo from './assets/ProfileLogo.png';
+import { isAuthenticated, checkAuth, logout, currentUser } from '@/services/authService';
 
+const router = useRouter();
+
+onMounted(checkAuth);
+
+const handleLogout = () => {
+  logout();
+  router.push('/login');
+};
+
+const isEmployee = computed(() => currentUser.value?.role === 'employee');
 </script>
+
 
 <template>
   <div id="app">
-    <div id="header">
-      <img id="logo" :src="logo" alt="Logo" />
-      <h1 id="header-title">Time Manager</h1>
-      <nav id="header-nav">
-        <button @click="switchComponent('WorkingTimes')">Working Times</button>
-        <button @click="switchComponent('ClockManager')">Clock Manager</button>
-        <button @click="switchComponent('ChartManager')">Chart Manager</button>
-        <button @click="switchComponent('User')">User</button>
-      </nav>
+    <div v-if="!isAuthenticated" class="auth-links">
+      <router-link to="/register">Register</router-link> |
+      <router-link to="/login">Login</router-link>
     </div>
-    <div id="header-lign"></div>
-    <div id="body">
-      <component :is="components[currentComponent]"></component>
+
+    <div v-if="isAuthenticated" class="authenticated-content">
+      <div id="header">
+        <div id="header-title">
+          <img id="logo" :src="logo" alt="Logo" />
+          <h2>Gotham Time Manager</h2>
+        </div>
+        <nav id="nav">
+          <router-link to="/" custom v-slot="{ navigate }">
+            <button @click="navigate">
+              <font-awesome-icon icon="fa-solid fa-chart-line" /> Dashboard
+            </button>
+          </router-link>
+          <router-link to="/profile" custom v-slot="{ navigate }">
+            <button @click="navigate">
+              <font-awesome-icon icon="fa-solid fa-user" /> Profile
+            </button>
+          </router-link>
+          <template v-if="!isEmployee">
+            <router-link to="/users" custom v-slot="{ navigate }">
+              <button @click="navigate">
+                <font-awesome-icon icon="fa-solid fa-users" /> Users
+              </button>
+            </router-link>
+            <router-link to="/manager" custom v-slot="{ navigate }">
+              <button @click="navigate">
+                <font-awesome-icon icon="fa-solid fa-chart-line" /> Manager
+              </button>
+            </router-link>
+          </template>
+        </nav>
+      </div>
+      <div id="body">
+        <div id="body-header">
+          <div class="header-right">
+            <img id="profile-logo" :src="profileLogo" alt="profileLogo" />
+            <button @click="handleLogout" class="logout-button">
+              <font-awesome-icon icon="fa-solid fa-sign-out-alt" /> Logout
+            </button>
+          </div>
+        </div>
+        <div id="body-content">
+          <router-view></router-view>
+        </div>
+      </div>
     </div>
+
+    <router-view v-if="!isAuthenticated"></router-view>
   </div>  
 </template>
 
 <style scoped>
-#header {
-  height: 20%;
-  width: 100%;
+#app {
   display: flex;
-  align-items: center;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+  width: 100vw;
 }
 
-#logo {
-  width: 200px;
-  height: 200px;
-  margin: 0 0 0 2%; 
+.authenticated-content {
+  display: flex;
+  width: 100%;
 }
 
-#header-lign {
-  width: 90%;
-  height: 2px;
-  background-color: #422800;
+#header {
+  width: 250px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
 #header-title {
-  margin: 0 0 0 1%;
-}
-
-#header-nav {
-  display: flex;
-  gap: 1rem;
-  width: 38%;
-  margin: 0 2% 0 26%;
-}
-
-#header-nav button {
-  padding: 0.5rem 1rem;
-  border: none;
-  background-color: #f0f0f0;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-#header-nav button:hover {
-  background-color: #e0e0e0;
-}
-
-#header-User {
-  margin: 0 5% 0 0;
-}
-
-button{
-  background-color: #fbeee0;
-  border: 2px solid #422800;
-  border-radius: 30px;
-  box-shadow: #422800 4px 4px 0 0;
-  color: #422800;
-  cursor: pointer;
-  display: inline-block;
-  font-weight: 600;
-  font-size: 18px;
-  padding: 0 18px;
-  line-height: 50px;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  min-width: 30%;
-}
-
-button:hover {
-  background-color: #fff;
-}
-
-button:active {
-  box-shadow: #422800 2px 2px 0 0;
-  transform: translate(2px, 2px);
-}
-button:focus {
-  box-shadow: rgba(0, 0, 0, .5) 0 0 0 3px;
-}
-#body {
-  height: 90%;
-  min-width: 98%;
   display: flex;
   align-items: center;
-  border-radius: 20px;
-  
+  padding: 20px;
 }
 
-#app {
+#header-title h2 {
+  font-size: 1.5rem;
+  margin-left: 10px;
+}
+
+#logo {
+  width: 50px;
+  height: 50px;
+}
+
+#nav {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  padding: 20px 0;
+}
+
+#nav button {
+  margin: 5px 0;
+  padding: 10px 20px;
+  border: none;
+  background-color: transparent;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+#nav button:hover, #nav button:focus {
+  background-color: #0177FB;
+  color: #ffffff;
+}
+
+#body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#body-header {
+  height: 60px;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
-  background-image: linear-gradient(to right, #efefef, #ddd2d2);
-  height: 100vh;
+  padding: 0 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+#profile-logo {
+  width: 36px;
+  height: 36px;
+  margin-right: 15px;
+  border-radius: 50%;
+}
+
+.logout-button {
+  background-color: #ff4136;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #ff1a1a;
+}
+
+#body-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.auth-links {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.auth-links a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
 }
 </style>

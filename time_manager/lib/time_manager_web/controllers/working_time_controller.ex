@@ -6,7 +6,18 @@ defmodule TimemanagerWeb.WorkingTimeController do
 
   action_fallback(TimemanagerWeb.FallbackController)
 
-  def index(conn, %{"userID" => user_id, "start" => startTime, "end" => endTime}) do
+  def getAllIndex(conn, %{"start" => startTime, "end" => endTime }) do
+    query =
+      from(wt in WorkingTime,
+        where: wt.start < ^endTime and wt.end > ^startTime
+      )
+
+    working_times = Repo.all(query)
+
+    render(conn, TimemanagerWeb.WorkingTimeJSON, "index.json", working_times: working_times)
+  end
+
+  def indexId(conn, %{"userID" => user_id, "start" => startTime, "end" => endTime}) do
     user_id = String.to_integer(user_id)
 
     query =
@@ -34,6 +45,8 @@ defmodule TimemanagerWeb.WorkingTimeController do
   end
 
   def create(conn, %{"working_time" => wt_params, "userID" => user_id}) do
+    IO.inspect(wt_params, label: "Working Time Params")
+    IO.inspect(user_id, label: "User ID")
     case WorkingTime.create_working_time(user_id, wt_params) do
       {:ok, wt} ->
         conn

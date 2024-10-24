@@ -42,7 +42,9 @@ defmodule Timemanager.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:cors_plug, "~> 3.0"}
+      {:cors_plug, "~> 3.0"},
+      {:bcrypt_elixir, "~> 3.0"},
+      {:guardian, "~> 2.0"}
     ]
   end
 
@@ -57,7 +59,9 @@ defmodule Timemanager.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      create_admin: ["run priv/repo/seeds/create_admin.exs"],
+      working_time_generator: ["run priv/repo/working_time_generator.exs"]
     ]
   end
 end

@@ -1,6 +1,7 @@
 import api from './api';
 
-export async function getWorkingTimes(userId, start, end) {
+export async function getWorkingTimes(start, end) {
+  const userId = localStorage.getItem('userId');
   console.log('Fetching working times with:', { userId, start, end });
   try {
     const response = await api.get(`/workingtime/${userId}`, {
@@ -13,9 +14,13 @@ export async function getWorkingTimes(userId, start, end) {
     throw error;
   }
 }
-export const getWorkingTimesUserId = async (userId) => {
+export const getWorkingTimesUserId = async (userId, start, end) => {
   try {
-    const response = await api.get(`/workingtimes/${userId}`);
+    const response = await api.get(`/workingtime/${userId}`,
+      {
+        params: { start, end }
+      }
+    );
     return response.data.data;
   } catch (error) {
     console.error('Error fetching working times:', error);
@@ -59,6 +64,16 @@ export async function deleteWorkingTime(wtId) {
     return response.data;
   } catch (error) {
     console.error('Error deleting working time:', error);
+    throw error;
+  }
+}
+
+export async function getAllIdWorkingTimes(startTime, endTime) {
+  try {
+    const response = await api.get(`/workingtime/${startTime}/${endTime}`);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching all working times:', error);
     throw error;
   }
 }

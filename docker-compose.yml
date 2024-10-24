@@ -1,32 +1,14 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   backend:
-    image: hanenetriaa/time_manager_backend:latest
+    image: aminhelloworld/timemanager-back:latest
     ports:
       - "4000:4000"
     environment:
-      MIX_ENV: ${MIX_ENV}
       DATABASE_URL: ${DATABASE_URL}
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-    depends_on:
-      - db
-    env_file:
-      - .env
 
   frontend:
-    image: hanenetriaa/time_manager_frontend:latest
+    image: aminhelloworld/timemanager-front:latest
     ports:
       - "4001:80"
-
-volumes:
-  postgres_data:

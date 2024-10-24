@@ -12,6 +12,9 @@ config :time_manager,
   ecto_repos: [Timemanager.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
+  config :time_manager, Timemanager.Guardian,
+  issuer: "time_manager",
+  secret_key: "J4izRPwmjvZS2uht02/Gcyj03vSV578Og03DHCv4rcKkbpuho6zwSA6JkAp6iNFh"
 # Configures the endpoint
 config :time_manager, TimemanagerWeb.Endpoint,
   url: [host: "localhost"],

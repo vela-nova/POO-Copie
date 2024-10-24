@@ -1,79 +1,113 @@
 <script setup>
-import { ref } from 'vue';
-import { userId } from '@/services/userService';
-import { clockStatus, creatClock, clockTime } from '@/services/clockService';
-import { switchComponent } from '@/services/componentService';
+import { ref, onMounted, watch } from 'vue';
+import { creatClock, clockTime } from '@/services/clockService';
+
+const userId = ref(localStorage.getItem('userId'));
+const isActive = ref(localStorage.getItem('isActive') === 'true');
+const clockStatus = ref(!isActive.value);
+
+console.log('userId:', userId.value);
+console.log('isActive initial:', isActive.value);
+
+onMounted(() => {
+  // Assurez-vous que l'état initial est correctement défini
+  updateClockStatus();
+});
+
+watch(isActive, (newValue) => {
+  localStorage.setItem('isActive', newValue);
+  updateClockStatus();
+});
+
+function updateClockStatus() {
+  clockStatus.value = !isActive.value;
+}
 
 const clock = async () => {
-    if (clockStatus.value) {
-        clockTime.value = null;
-    } else {
-        clockTime.value = new Date().toLocaleString();
+  try {
+    clockTime.value = new Date().toLocaleString();
+    await creatClock(!isActive.value);
+    isActive.value = !isActive.value;
+    // Pas besoin de mettre à jour localStorage ici, le watcher s'en chargera
+    
+    if (!isActive.value) {
+      refresh();
     }
-    clockStatus.value = !clockStatus.value;
-    await creatClock();
+  } catch (error) {
+    console.error('Error in clock function:', error);
+  }
 };
 
 const refresh = () => {
-    clockTime.value = null;
-    clockStatus.value = false;
+  clockTime.value = null;
+  isActive.value = false;
 };
+
 </script>
 
 <template>
-    <div id="clockManager">
-        <div v-if="userId === null">
-            <h2>Selectionner un Utilisateur</h2>
-            <button @click="switchComponent('User')">Vers User</button>
-        </div>
-        <h1 v-if="userId !== null">Clock Manager for User: {{ userId }}</h1>
-        <div v-if="userId !== null">
-            <p v-if="clockTime">Start Time: {{ clockTime }}</p>
-            <p v-else>No work period in progress</p>
-            <p>Clock In Status: {{ clockStatus ? 'Active' : 'Inactive' }}</p>
-            <button @click="clock">{{ clockStatus ? 'Clock Out' : 'Clock In' }}</button>
-            <button @click="refresh">Reset</button>
-        </div>
-    </div>
+  <div id="clockManager">
+    <h1 v-if="userId">Status of employee: {{ userId }}</h1>
+    <button id="active-button" @click="clock" :class="{ 'active': isActive }">
+      <span class="button-text">{{ isActive ? 'Active' : 'Inactive' }}</span>
+    </button>
+  </div>
 </template>
 
 <style scoped>
-    #clockManager {
-        width: 50%;
-        margin: 0 auto;
-        border-radius: 4px;
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-    }
-   
-    button{
-    background-color: #fbeee0;
-    border: 2px solid #422800;
-    border-radius: 30px;
-    box-shadow: #422800 2px 2px 0 0;
-    color: #422800;
-    cursor: pointer;
-    display: inline-block;
-    font-weight: 600;
-    font-size: 18px;
-    padding: 0 18px;
-    line-height: 50px;
-    text-align: center;
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    min-width: 30%;
-    margin: 10% 0 0 17%;
-    }
+#clockManager {
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+}
 
-    button:hover {
-    background-color: #f6efe8;
-    }
+#active-button {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  border: 8px solid #ef1919;
+  position: relative;
+  overflow: hidden;
+}
 
-    button:active {
-    box-shadow: #422800 2px 2px 0 0;
-    transform: translate(2px, 2px);
-    }
+#active-button::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background-color: #e52727;
+  border-radius: 50%;
+  z-index: -1;
+  transition: all 0.3s ease;
+}
+
+#active-button.active {
+  border-color: #4CAF50;
+}
+
+#active-button.active::before {
+  background-color: #4CAF50;
+}
+
+.button-text {
+  position: relative;
+  z-index: 1;
+  color: white;
+  transition: color 0.3s ease;
+}
+
+#active-button:not(.active) .button-text {
+  color: white;
+}
 </style>
