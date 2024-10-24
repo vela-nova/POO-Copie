@@ -8,7 +8,6 @@ defmodule Timemanager.Accounts.User do
     field :password, :string, virtual: true
     field :password_hash, :string
     field :role, :string, default: "employee"
-    field :contractHour, :integer, default: 0
     has_many(:clocks, Timemanager.Clock)
     has_many(:working_time, Timemanager.WorkingTime)
 
