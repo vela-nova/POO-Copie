@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted, computed, watch  } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'vue-chartjs';
-import { getWorkingTimesUserId } from '@/services/workingTimeService'; // Assurez-vous que ce chemin est correct
+import { getWorkingTimesUserId } from '@/services/workingTimeService';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -18,6 +18,18 @@ const props = defineProps({
   users: {
     type: Array,
     required: true
+  },
+  nightWorkStartHour: {
+    type: Number,
+    default: 22
+  },
+  nightWorkEndHour: {
+    type: Number,
+    default: 6
+  },
+  maxRegularHours: {
+    type: Number,
+    default: 35
   }
 });
 
@@ -32,6 +44,7 @@ const updateUserId = (event) => {
 };
 
 const workingTimes = ref([]);
+
 function formatDate(date) {
   return date.toISOString().split('T')[0] + 'T00:00:00';
 }
@@ -47,38 +60,83 @@ startOfPeriod.setDate(endOfWeek.getDate() - 84); // 12 semaines * 7 jours = 84 j
 const start = ref(formatDate(startOfPeriod));
 const end = ref(endOfWeek.toISOString().replace('Z', ''));
 
+function calculateHours(start, end, nightStartHour, nightEndHour, maxRegularHours) {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  let regularHours = 0;
+  let nightHours = 0;
+  let overtimeHours = 0;
+
+  let currentTime = startDate.getTime();
+  const endTime = endDate.getTime();
+
+  while (currentTime < endTime) {
+    const currentHour = new Date(currentTime).getHours();
+    const isNightHour = currentHour >= nightStartHour || currentHour < nightEndHour;
+
+    if (isNightHour) {
+      nightHours++;
+    } else if (regularHours < maxRegularHours) {
+      regularHours++;
+    } else {
+      overtimeHours++;
+    }
+
+    currentTime += 3600000; // Add 1 hour (in milliseconds)
+  }
+
+  return { regularHours, nightHours, overtimeHours };
+}
+
 const chartData = computed(() => {
   const weeklyHours = {};
   const allWeeks = [];
 
-  // Générer toutes les semaines de la période
   let currentDate = new Date(startOfPeriod);
   while (currentDate <= endOfWeek) {
     const weekKey = getWeekNumber(currentDate);
     allWeeks.push(weekKey);
-    weeklyHours[weekKey] = 0;
+    weeklyHours[weekKey] = { regular: 0, night: 0, overtime: 0 };
     currentDate.setDate(currentDate.getDate() + 7);
   }
 
   workingTimes.value.forEach(wt => {
-    const startDate = new Date(wt.start);
-    const endDate = new Date(wt.end);
-    const weekKey = getWeekNumber(startDate);
-    const hoursWorked = (endDate - startDate) / (1000 * 60 * 60);
+    const weekKey = getWeekNumber(new Date(wt.start));
+    const { regularHours, nightHours, overtimeHours } = calculateHours(
+      wt.start,
+      wt.end,
+      props.nightWorkStartHour,
+      props.nightWorkEndHour,
+      props.maxRegularHours
+    );
 
-    weeklyHours[weekKey] += hoursWorked;
+    weeklyHours[weekKey].regular += regularHours;
+    weeklyHours[weekKey].night += nightHours;
+    weeklyHours[weekKey].overtime += overtimeHours;
   });
 
   const labels = allWeeks;
-  const data = labels.map(week => weeklyHours[week]);
+  const regularData = labels.map(week => weeklyHours[week].regular);
+  const nightData = labels.map(week => weeklyHours[week].night);
+  const overtimeData = labels.map(week => weeklyHours[week].overtime);
 
   return {
     labels,
     datasets: [
       {
-        label: 'Heures travaillées par semaine',
-        data,
+        label: 'Heures normales',
+        data: regularData,
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
+      },
+      {
+        label: 'Heures de nuit',
+        data: nightData,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+      },
+      {
+        label: 'Heures supplémentaires',
+        data: overtimeData,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)',
       }
     ]
   };
@@ -89,12 +147,14 @@ const chartOptions = {
   scales: {
     y: {
       beginAtZero: true,
+      stacked: true,
       title: {
         display: true,
         text: 'Heures travaillées'
       }
     },
     x: {
+      stacked: true,
       title: {
         display: true,
         text: 'Semaine'
@@ -143,13 +203,14 @@ onMounted(async () => {
     console.error('User ID not found');
   }
 });
+
 watch(selectedUserId, async (newValue) => {
   props.userId = newValue;
   try {
-      const data = await getWorkingTimesUserId(selectedUserId.value, start.value, end.value);
-      workingTimes.value = data;
+    const data = await getWorkingTimesUserId(selectedUserId.value, start.value, end.value);
+    workingTimes.value = data;
   } catch (error) {
-      console.error('Erreur lors de la récupération des temps de travail:', error);
+    console.error('Erreur lors de la récupération des temps de travail:', error);
   }
 });
 </script>
@@ -160,7 +221,7 @@ watch(selectedUserId, async (newValue) => {
     
     <div v-if="props.isAdmin" class="select-container">
       <label for="numberSelect">Sélectionnez un numéro :</label>
-      <select  id="numberSelect" v-model="selectedUserId" @change="updateUserId">
+      <select id="numberSelect" v-model="selectedUserId" @change="updateUserId">
         <option v-for="user in users" :key="user.id" :value="user.id">
           {{ user.id }}
         </option>

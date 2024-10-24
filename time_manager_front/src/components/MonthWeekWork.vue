@@ -17,6 +17,18 @@
         users: {
             type: Array,
             required: true
+        },
+        nightWorkStartHour: {
+        type: Number,
+        default: 22 // Par exemple, le travail de nuit commence à 22h
+        },
+        nightWorkEndHour: {
+            type: Number,
+            default: 6 // Par exemple, le travail de nuit se termine à 6h
+        },
+        maxRegularHours: {
+            type: Number,
+            default: 35 // Par exemple, 35 heures par semaine
         }
     });
 
@@ -60,63 +72,113 @@
     }
 
     workingTimes.value.forEach(wt => {
-        const startDate = new Date(wt.start);
-        const endDate = new Date(wt.end);
-        const monthKey = getMonthKey(startDate);
-        const hoursWorked = (endDate - startDate) / (1000 * 60 * 60);
+        const { regularHours, nightHours, overtimeHours } = calculateHours(
+            wt.start,
+            wt.end,
+            props.nightWorkStartHour,
+            props.nightWorkEndHour,
+            props.maxRegularHours
+        );
+        const monthKey = getMonthKey(new Date(wt.start));
 
-        monthlyHours[monthKey] += hoursWorked;
+        if (!monthlyHours[monthKey]) {
+            monthlyHours[monthKey] = { regular: 0, night: 0, overtime: 0 };
+        }
+        monthlyHours[monthKey].regular += regularHours;
+        monthlyHours[monthKey].night += nightHours;
+        monthlyHours[monthKey].overtime += overtimeHours;
     });
 
     const labels = allMonths;
-    const data = labels.map(month => monthlyHours[month]);
+    const regularData = labels.map(month => monthlyHours[month]?.regular || 0);
+    const nightData = labels.map(month => monthlyHours[month]?.night || 0);
+    const overtimeData = labels.map(month => monthlyHours[month]?.overtime || 0);
 
     return {
         labels,
         datasets: [
-        {
-            label: 'Heures travaillées par mois',
-            data,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        }
+            {
+                label: 'Heures normales',
+                data: regularData,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            },
+            {
+                label: 'Heures de nuit',
+                data: nightData,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            },
+            {
+                label: 'Heures supplémentaires',
+                data: overtimeData,
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+            }
         ]
     };
-    });
+});
 
-    const chartOptions = {
+const chartOptions = {
     responsive: true,
     scales: {
         y: {
-        beginAtZero: true,
-        title: {
-            display: true,
-            text: 'Heures travaillées'
-        }
+            beginAtZero: true,
+            stacked: true,
+            title: {
+                display: true,
+                text: 'Heures travaillées'
+            }
         },
         x: {
-        title: {
-            display: true,
-            text: 'Mois'
-        },
-        ticks: {
-            maxRotation: 45,
-            minRotation: 45
-        }
+            stacked: true,
+            title: {
+                display: true,
+                text: 'Mois'
+            },
+            ticks: {
+                maxRotation: 45,
+                minRotation: 45
+            }
         }
     },
     plugins: {
         tooltip: {
-        callbacks: {
-            title: (tooltipItems) => {
-            const monthLabel = tooltipItems[0].label;
-            const [year, month] = monthLabel.split('-');
-            const date = new Date(year, parseInt(month) - 1);
-            return date.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+            callbacks: {
+                title: (tooltipItems) => {
+                    const monthLabel = tooltipItems[0].label;
+                    const [year, month] = monthLabel.split('-');
+                    const date = new Date(year, parseInt(month) - 1);
+                    return date.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+                }
             }
         }
-        }
     }
-    };
+};
+
+    function calculateHours(start, end, nightStartHour, nightEndHour, maxRegularHours) {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        let regularHours = 0;
+        let nightHours = 0;
+        let overtimeHours = 0;
+
+        let currentHour = startDate.getHours();
+        let hoursWorked = (endDate - startDate) / (1000 * 60 * 60);
+
+        while (hoursWorked > 0) {
+            if (currentHour >= nightStartHour || currentHour < nightEndHour) {
+                nightHours++;
+            } else {
+                if (regularHours < maxRegularHours) {
+                    regularHours++;
+                } else {
+                    overtimeHours++;
+                }
+            }
+            hoursWorked--;
+            currentHour = (currentHour + 1) % 24;
+        }
+
+        return { regularHours, nightHours, overtimeHours };
+    }
 
     function getMonthKey(date) {
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;

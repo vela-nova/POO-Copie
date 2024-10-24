@@ -7,6 +7,7 @@ defmodule Timemanager.Repo.Migrations.CreateUsers do
       add :email, :string, null: false
       add :password_hash, :string, null: false
       add :role, :string, default: "employee", null: false
+      add :contractHour, :integer, default: 0, null: false
 
       timestamps()
     end
