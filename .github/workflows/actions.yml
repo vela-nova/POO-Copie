@@ -74,7 +74,7 @@ jobs:
         echo ssh connect
         ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker kill timemanager-back || true"
         ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker pull aminhelloworld/timemanager-back:latest"
-        ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker run -d --rm --name timemanager-back -e DATABASE_URL="${{secrets.DB_URL}}" -p 4000:4000 aminhelloworld/timemanager-back:latest"
+        ssh -i ~/.ssh/id_rsa ${{ secrets.REMOTE_SERVER_USERNAME }}@${{ secrets.REMOTE_SERVER_ADDRESS }} "sudo docker run -d --rm --name timemanager-back -e DATABASE_URL='${{secrets.DB_URL}}' -p 4000:4000 aminhelloworld/timemanager-back:latest"
 
 
   deploy-front:
