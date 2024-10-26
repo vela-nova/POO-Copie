@@ -16,10 +16,7 @@ const handleChangePassword = async () => {
     return;
   }
   try {
-    console.log('Attempting to change password');
     const result = await changePassword(currentPassword.value, newPassword.value);
-    console.log('Password change result:', result);
-    success.value = 'Password changed successfully';
     currentPassword.value = '';
     newPassword.value = '';
     confirmPassword.value = '';

@@ -44,6 +44,8 @@ const handleRegister = async () => {
       <input v-model="password" type="password" placeholder="Password" required>
       <button type="submit">Register</button>
     </form>
+
+    <router-link to="/login">Login</router-link>
     <p v-if="error" class="error">{{ error }}</p>
   </div>
 </template>
@@ -53,12 +55,12 @@ const handleRegister = async () => {
   display: flex;
   flex-direction: column;
   text-align: center;
-  margin: 2% 0 0 33%;
+  margin: auto;
 }
 
 .register h1 {
   font-size: 60px;
-  margin: 0 0 50px 0;
+  margin: auto;
 }
 
 .register h2 {
@@ -69,7 +71,7 @@ const handleRegister = async () => {
 .register img {
   height: 300px;
   width: 300px;
-  margin: 0 0 0 40px;
+  margin: auto;
 }
 
 .register form {

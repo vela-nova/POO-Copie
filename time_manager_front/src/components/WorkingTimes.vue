@@ -1,9 +1,11 @@
 <script setup>
 import WorkingTime from './WorkingTime.vue';
 import { ref, onMounted, nextTick } from 'vue';
-import { getWorkingTimes, createWorkingTime } from '@/services/workingTimeService';
+import { createWorkingTime, getWorkingTimesUserId } from '@/services/workingTimeService';
+import { user } from '@/services/userService';
 
-const userId = ref(1);
+
+const userId = localStorage.getItem('userId');
 const start = ref('2000-01-01T00:00:00');
 const end = ref('2030-12-31T23:59:59');
 const day_wts = ref([]);
@@ -13,9 +15,7 @@ const newEnd = ref('');
 
 const fetchWorkingTimes = async () => {
   try {
-    console.log('Fetching working times...');
-    const data = await getWorkingTimes(userId.value, start.value, end.value);
-    console.log('Received working times:', data);
+    const data = await getWorkingTimesUserId(userId, start.value, end.value);
     day_wts.value = data;
   } catch (error) {
     console.error('Error in fetchWorkingTimes:', error);
@@ -24,7 +24,8 @@ const fetchWorkingTimes = async () => {
 
 const handleCreateWorkingTime = async () => {
   try {
-    const newWorkingTime = await createWorkingTime(userId.value, {
+    const newWorkingTime = await createWorkingTime(userId, 
+    {
       start: newStart.value,
       end: newEnd.value
     });
@@ -53,20 +54,21 @@ onMounted(fetchWorkingTimes);
 
 <template>
   <div id="wt_main">
-    <div id="datepicker_wrapper">
-      <input class="dp" type="datetime-local" v-model="start" @change="fetchWorkingTimes" />
-      <input class="dp" type="datetime-local" v-model="end" @change="fetchWorkingTimes" />
-      <button class="dp" @click="fetchWorkingTimes">Get Working Times</button>
-    </div>
 
-    <div id="create_wrapper">
+    <div id="create_wrapper" class="box">
       <h3>Create New Working Time</h3>
       <input class="dp" type="datetime-local" v-model="newStart" placeholder="Start time" />
       <input class="dp" type="datetime-local" v-model="newEnd" placeholder="End time" />
       <button class="dp" @click="handleCreateWorkingTime">Create</button>
     </div>
 
-    <div id="h_wrapper">
+    <div id="datepicker_wrapper" class="box">
+      <input class="dp" type="datetime-local" v-model="start" @change="fetchWorkingTimes" />
+      <input class="dp" type="datetime-local" v-model="end" @change="fetchWorkingTimes" />
+      <button class="dp" @click="fetchWorkingTimes">Get Working Times</button>
+    </div>
+
+    <div id="h_wrapper" class="box">
       <div class="wt_wrapper" v-for="wt in day_wts" :key="wt.id">
         <WorkingTime 
           :wtId="wt.id"
@@ -84,11 +86,25 @@ onMounted(fetchWorkingTimes);
 <style scoped>
 /* Vos styles existants */
 
-#create_wrapper {
-  background-color: #f0f8ff;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-radius: 8px;
+.box {
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.365);
+  overflow: scroll;
+  background-color: white;
+  border: 20px solid white;
+  border-radius: 10px;
+  margin: 0 auto;
+  text-align: center;
+  width: 80%;
+  max-width: 600px;
+  max-height: 85%;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+
+#h_wrapper {
+  display: flex;
+  flex-direction: column;
 }
 
 #create_wrapper h3 {

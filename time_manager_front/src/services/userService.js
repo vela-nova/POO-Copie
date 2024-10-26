@@ -34,7 +34,6 @@ export const fetchUser = async () => {
 export const getUsers = async () => {
   try {
     const response = await api.get('/users');
-    console.log('Full API response:', response);
     return response.data.data || [];
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -45,7 +44,6 @@ export const getUsers = async () => {
 export const createUser = async (userData) => {
   try {
     const response = await api.post('/users', { user: { ...userData, password: 'default_password' } });
-    console.log('Create user response:', response.data);
     return response.data.data;
   } catch (error) {
     console.error('Error creating user:', error);
@@ -60,9 +58,7 @@ export const createUser = async (userData) => {
 
 export const updateUser = async (userId, userData) => {
   try {
-    console.log('Updating user:', userId, userData);
     const response = await api.put(`/users/${userId}`, { user: userData });
-    console.log('Update response:', response.data);
     return response.data.data;
   } catch (error) {
     console.error('Error updating user:', error);
@@ -77,9 +73,7 @@ export const updateUser = async (userId, userData) => {
 
 export const updateUserRole = async (userId, newRole) => {
   try {
-    console.log('Updating user role:', userId, newRole);
     const response = await api.put(`/users/${userId}/role`, { role: newRole });
-    console.log('Update role response:', response.data);
     return response.data.data;
   } catch (error) {
     console.error('Error updating user role:', error);
@@ -95,7 +89,6 @@ export const updateUserRole = async (userId, newRole) => {
 export const deleteUser = async (userId) => {
   try {
     const response = await api.delete(`/users/${userId}`);
-    console.log('Delete response:', response);
     return true;
   } catch (error) {
     console.error('Error deleting user:', error);

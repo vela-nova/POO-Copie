@@ -22,50 +22,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['workingTimeDeleted', 'workingTimeUpdated']);
-function formatDate(date) {
-  return date.toISOString().split('T')[0] + 'T00:00:00';
-}
 
-const today = new Date();
-
-const startOfWeek = new Date(today);
-startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
-
-const endOfWeek = new Date(startOfWeek);
-endOfWeek.setDate(startOfWeek.getDate() + 6);
-endOfWeek.setHours(23, 59, 59);
-
-
-const startDate = ref(formatDate(startOfWeek));
-const endDate = ref(endOfWeek.toISOString().replace('Z', ''));
+let startDate = ref(new Date(props.start));
+let endDate = ref(new Date(props.end));
 
 const isEditing = ref(false);
 
-const isValidDate = (date) => date instanceof Date && !isNaN(date);
-
-const formattedStartDate = computed(() => {
-  if (isValidDate(startDate.value)) {
-    return {
-      year: startDate.value.getFullYear(),
-      month: startDate.value.toLocaleString('default', { month: 'long' }),
-      date: startDate.value.getDate(),
-      time: startDate.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-  }
-  return null;
-});
-
-const formattedEndDate = computed(() => {
-  if (isValidDate(endDate.value)) {
-    return {
-      year: endDate.value.getFullYear(),
-      month: endDate.value.toLocaleString('default', { month: 'long' }),
-      date: endDate.value.getDate(),
-      time: endDate.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-  }
-  return null;
-});
+let tempStartDate = new Date(props.start);
+let tempEndDate = new Date(props.end);
 
 const handleDelete = async () => {
     try {
@@ -78,60 +42,95 @@ const handleDelete = async () => {
 
 const handleUpdate = async () => {
   try {
+    console.log(tempStartDate, tempEndDate)
     const updatedWorkingTime = await updateWorkingTime(props.wtId, {
-      start: startDate.value instanceof Date ? startDate.value.toISOString() : startDate.value,
-      end: endDate.value instanceof Date ? endDate.value.toISOString() : endDate.value
+      start: tempStartDate,
+      end: tempEndDate
     });
     emit('workingTimeUpdated', { ...updatedWorkingTime, id: props.wtId });
     isEditing.value = false;
+    startDate.value = tempStartDate;
+    endDate.value = tempEndDate;
+
   } catch (error) {
     console.error('Error updating working time:', error);
   }
 };
 
 const updateStartDate = (event) => {
-  startDate.value = new Date(event.target.value);
+  tempStartDate = new Date(event.target.value);
 };
 
 const updateEndDate = (event) => {
-  endDate.value = new Date(event.target.value);
+  tempEndDate = new Date(event.target.value);
 };
+
+const cancelUpdate = () => {
+  isEditing.value = false;
+  tempStartDate = startDate.value;
+  tempEndDate = endDate.value;
+};
+
 </script>
 
 <template>
     <div id="wt_main">
-        <div class="wt_seg" v-if="!isEditing && formattedStartDate">
-            <p>{{ formattedStartDate.year }}</p>
-            <p>{{ formattedStartDate.month }} {{ formattedStartDate.date }}</p>
-            <p>{{ formattedStartDate.time }}</p>
+        <div class="wt_seg" v-if="!isEditing">            
+          <p>{{startDate.getFullYear()}}</p>
+          <p>{{startDate.toLocaleString('default', { month: 'long' })}} {{startDate.getDate()}}</p>
+          <p>{{startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}}</p>
         </div>
         <div class="wt_seg" v-else>
-            <input type="datetime-local" :value="startDate.toString()" @input="updateStartDate" />
+          <input type="datetime-local" :value="tempStartDate.toISOString().substring(0, 16)" @input="updateStartDate" />
         </div>
         <p>→</p>
-        <div class="wt_seg" v-if="!isEditing && formattedEndDate">
-            <p>{{ formattedEndDate.year }}</p>
-            <p>{{ formattedEndDate.month }} {{ formattedEndDate.date }}</p>
-            <p>{{ formattedEndDate.time }}</p>
+        <div class="wt_seg" v-if="!isEditing">            
+          <p>{{endDate.getFullYear()}}</p>
+          <p>{{endDate.toLocaleString('default', { month: 'long' })}} {{startDate.getDate()}}</p>
+          <p>{{endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}}</p>
         </div>
         <div class="wt_seg" v-else>
-            <input type="datetime-local" :value="endDate.toString()" @input="updateEndDate" />
+            <input type="datetime-local" :value="tempEndDate.toISOString().substring(0, 16)" @input="updateEndDate" />
         </div>
         <div class="wt_seg">
             <span>User ID: {{ props.userId }}</span>
             <button class="dp" v-if="!isEditing" @click="isEditing = true">Edit</button>
             <button class="dp" v-else @click="handleUpdate">Save</button>
-            <button class="dp" @click="handleDelete">Delete</button>
+            <button class="dp" v-if="!isEditing" @click="handleDelete">Delete</button>
+            <button class="dp" v-else @click="cancelUpdate">Cancel</button>
         </div>
     </div>
 </template>
 
 <style scoped>
 /* Vos styles existants */
+#wt_main {
+    display: flex; 
+    flex-direction: row; 
+    align-items: center; 
+    justify-content: center;
+    padding: 1em;
+}
+p {
+    margin: 0;
+}
+.wt_seg{
+    margin: none;  
 
-input[type="datetime-local"] {
     padding: 0.5em;
-    border: 1px solid #9bbdd7;
-    border-radius: 4px;
+    margin:0.5em;
+}
+.dp{
+    -webkit-appearance: none;
+    border: none;
+    border-bottom: 2px solid grey ;
+    padding:0.5em;
+    background-color: #dbe9f4;
+    margin: 1em;
+    margin-top: 0;
+}
+.dp:hover{
+    background-color: #9bbdd7;
+    border-bottom: 2px solid grey ;
 }
 </style>

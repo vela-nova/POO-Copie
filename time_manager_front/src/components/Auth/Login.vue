@@ -30,6 +30,7 @@ const handleLogin = async () => {
       <input v-model="password" type="password" placeholder="Password" required>
       <button type="submit">Login</button>
     </form>
+      <router-link to="/register">Register</router-link> 
     <p v-if="error" class="error">{{ error }}</p>
   </div>
 </template>
@@ -39,7 +40,7 @@ const handleLogin = async () => {
   display: flex;
   flex-direction: column;
   text-align: center;
-  margin: 2% 0 0 33%;
+  margin: auto;
 }
 
 .login h1 {
@@ -55,7 +56,7 @@ const handleLogin = async () => {
 .login img {
   height: 300px;
   width: 300px;
-  margin: 0 0 0 40px;
+  margin: auto;
 }
 
 .login form {

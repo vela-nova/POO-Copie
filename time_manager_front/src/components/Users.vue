@@ -45,7 +45,7 @@ onMounted(async () => {
   width: calc(100%-2em);
   min-width: 18em;
   height: 6em;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.486) ;
+  border-bottom: 2px solid grey ;
   margin-right: 1em;
   margin-left: 1em;
   margin-bottom: 0.5em;
@@ -57,9 +57,11 @@ onMounted(async () => {
 }
 
 #userlistWrapper {
+
+  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.365);
   overflow: scroll;
-  background-color: grey;
-  border: 20px solid grey;
+  background-color: white;
+  border: 20px solid white;
   border-radius: 10px;
   margin: 0 auto;
   text-align: center;

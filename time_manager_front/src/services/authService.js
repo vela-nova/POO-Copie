@@ -68,7 +68,6 @@ export const checkAuth = async () => {
 export const changePassword = async (currentPassword, newPassword) => {
   try {
     const response = await api.put('/change-password', { currentPassword, newPassword });
-    console.log('Change password response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Change password error:', error);

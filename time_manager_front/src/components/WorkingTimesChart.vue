@@ -47,18 +47,16 @@ const startOfWeek = new Date(today);
 startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
 
 const endOfWeek = new Date(startOfWeek);
-endOfWeek.setDate(startOfWeek.getDate() + 6);
-endOfWeek.setHours(23, 59, 59);
+endOfWeek.setDate(startOfWeek.getDate() + 8);
+endOfWeek.setHours(0, 0, 0, 0);
 
 
 const start = ref(formatDate(startOfWeek));
-const end = ref(endOfWeek.toISOString().replace('Z', ''));
+const end = ref(formatDate(endOfWeek));
 
 const fetchWorkingTimes = async () => {
   try {
-    console.log('Fetching working times...');
     const data = await getAllIdWorkingTimes(start.value, end.value);
-    console.log('Received working times:', data);
     processChartData(data);
   } catch (error) {
     console.error('Error in fetchWorkingTimes:', error);
@@ -67,7 +65,6 @@ const fetchWorkingTimes = async () => {
 
 const processChartData = (workingTimes) => {
   const userHours = {};
-  console.log('Processing chart data...', workingTimes);
   workingTimes.forEach(wt => {
     const userId = wt.user_id;
     const startTime = new Date(wt.start);
@@ -80,8 +77,6 @@ const processChartData = (workingTimes) => {
       userHours[userId] = hoursWorked;
     }
   });
-  console.log('Number of unique users:', Object.keys(userHours).length);
-  console.log('Processed chart :', userHours);
   const labels = Object.keys(userHours).map(id => `User ${id}`);
   const dataValues = Object.values(userHours);
 
@@ -108,7 +103,7 @@ onMounted(fetchWorkingTimes);
   <div id="wt_main">
 
     <div id="chart_wrapper">
-      <h2>Hours Worked by User this week</h2>
+      <h2>Hours worked by user this week</h2>
       <div id="pie">
         <Pie v-if="chartData" :data="chartData" :options="chartOptions" />
       </div>
@@ -123,11 +118,19 @@ onMounted(fetchWorkingTimes);
 
 <style scoped>
 #wt_main {
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
   padding: 20px;
 }
-
+#wt_main h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 #datepicker_wrapper {
   margin: 30px 0 20px 0;
+}
+#datepicker_wrapper{
+  text-align: center;
 }
 
 .dp {
@@ -135,8 +138,6 @@ onMounted(fetchWorkingTimes);
 }
 
 #chart_wrapper {
-  width: 600px;
-  height: 400px;
-  margin: 0 auto;
+  margin: auto;
 }
 </style>

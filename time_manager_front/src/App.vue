@@ -14,16 +14,16 @@ const handleLogout = () => {
   router.push('/login');
 };
 
+const currentRoute = computed(
+  () => router.currentRoute.value.path
+);
+
 const isEmployee = computed(() => currentUser.value?.role === 'employee');
 </script>
 
 
 <template>
   <div id="app">
-    <div v-if="!isAuthenticated" class="auth-links">
-      <router-link to="/register">Register</router-link> |
-      <router-link to="/login">Login</router-link>
-    </div>
 
     <div v-if="isAuthenticated" class="authenticated-content">
       <div id="header">
@@ -33,24 +33,29 @@ const isEmployee = computed(() => currentUser.value?.role === 'employee');
         </div>
         <nav id="nav">
           <router-link to="/" custom v-slot="{ navigate }">
-            <button @click="navigate">
+            <button @click="navigate" :class="{ selected: currentRoute=='/' }">
               <font-awesome-icon icon="fa-solid fa-chart-line" /> Dashboard
             </button>
           </router-link>
           <router-link to="/profile" custom v-slot="{ navigate }">
-            <button @click="navigate">
+            <button @click="navigate" :class="{ selected: currentRoute=='/profile' }">
               <font-awesome-icon icon="fa-solid fa-user" /> Profile
+            </button>
+          </router-link>
+          <router-link to="/workingTimes" custom v-slot="{ navigate }">
+            <button @click="navigate" :class="{ selected: currentRoute=='/workingTimes' }">
+              <font-awesome-icon icon="fa-solid fa-calendar-days" /> Working Times
             </button>
           </router-link>
           <template v-if="!isEmployee">
             <router-link to="/users" custom v-slot="{ navigate }">
-              <button @click="navigate">
+              <button @click="navigate" :class="{ selected: currentRoute=='/users' }">
                 <font-awesome-icon icon="fa-solid fa-users" /> Users
               </button>
             </router-link>
             <router-link to="/manager" custom v-slot="{ navigate }">
-              <button @click="navigate">
-                <font-awesome-icon icon="fa-solid fa-chart-line" /> Manager
+              <button @click="navigate" :class="{ selected: currentRoute=='/manager' }">
+                <font-awesome-icon icon="fa-solid fa-clipboard" /> Manager
               </button>
             </router-link>
           </template>
@@ -124,7 +129,6 @@ const isEmployee = computed(() => currentUser.value?.role === 'employee');
   padding: 10px 20px;
   border: none;
   background-color: transparent;
-  border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
   width: 100%;
@@ -132,8 +136,8 @@ const isEmployee = computed(() => currentUser.value?.role === 'employee');
   transition: background-color 0.3s, color 0.3s;
 }
 
-#nav button:hover, #nav button:focus {
-  background-color: #0177FB;
+#nav button:hover, #nav button:focus, .selected {
+  background-color: #0177FB !important;
   color: #ffffff;
 }
 

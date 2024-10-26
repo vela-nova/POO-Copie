@@ -34,9 +34,11 @@ const props = defineProps({
         <p><b>Email : </b>{{ mailadress }}</p>
       </div>
     </div>
-    <div class="segment" id="userActions">
-      <font-awesome-icon icon="fa-solid fa-chart-line" /> 
-    </div>
+    <router-link to="/" custom v-slot="{ navigate }">
+      <div class="segment" id="userActions" @click="navigate" >
+        <font-awesome-icon icon="fa-solid fa-chart-line" /> 
+      </div>
+    </router-link>
   </div>
 </template>
 
@@ -72,13 +74,13 @@ const props = defineProps({
   height: 2em;
   margin-bottom: 0.3em;
   padding: 2px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.205);
+  border-bottom: 2px solid grey;
   margin: auto 0;
 }
 
 #userActions *:hover {
-  border-color:  rgba(255, 255, 255, 0.7);
-  color: rgba(255, 255, 255, 0.7);
+  border-color:  grey;
+  color: grey; 
 }
 
 #userinfo * {
@@ -88,16 +90,16 @@ const props = defineProps({
   text-align: left;
   margin-right: 0.5em;
   padding-right: 0.5em;
-  border-right: 2px solid rgba(255, 255, 255, 0.205) ;
+  border-right: 2px solid grey;
   display: flex;
   flex: 1;
 }
 #userinfo p{
   margin: 0;
-  color:  rgba(255, 255, 255, 0.7)  ;
+  color:  rgba(0, 0, 0, 0.856)  ;
 }
 #userinfo b{
-  color: white;
+  color: black;
 }
 
 .segment{

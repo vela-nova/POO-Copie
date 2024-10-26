@@ -16,7 +16,6 @@ const isManagerOrAdmin = computed(() => ['manager', 'admin'].includes(currentUse
 const fetchUsers = async () => {
   try {
     const fetchedUsers = await getUsers();
-    console.log('Fetched users:', fetchedUsers);
     users.value = fetchedUsers;
     loading.value = false;
   } catch (err) {
@@ -43,7 +42,6 @@ const saveUserInfo = async () => {
       email: editingUser.value.email
     });
     
-    console.log('Updated user info:', updatedUser);
     updateUserInList(updatedUser);
   } catch (err) {
     console.error('Error in saveUserInfo:', err);
@@ -55,10 +53,8 @@ const saveUserRole = async () => {
   if (!editingUser.value || !isAdmin.value) return;
   
   try {
-    console.log('Attempting to update role for user:', editingUser.value.id, 'to', editingUser.value.role);
     const updatedUser = await updateUserRole(editingUser.value.id, editingUser.value.role);
     
-    console.log('Updated user role:', updatedUser);
     updateUserInList(updatedUser);
   } catch (err) {
     console.error('Error in saveUserRole:', err);
@@ -80,9 +76,7 @@ const deleteUserHandler = async (userId) => {
     return;
   }
   try {
-    console.log('Attempting to delete user:', userId);
     await deleteUser(userId);
-    console.log('User deleted successfully');
     users.value = users.value.filter(user => user.id !== userId);
   } catch (err) {
     console.error('Error in deleteUserHandler:', err);
@@ -100,7 +94,6 @@ const createNewUser = async () => {
       role: newUser.value.role
     };
     const createdUser = await createUser(newUserData);
-    console.log('Created new user:', createdUser);
     users.value.push(createdUser);
     showAddUserForm.value = false;
     newUser.value = { username: '', email: '', role: 'employee' };

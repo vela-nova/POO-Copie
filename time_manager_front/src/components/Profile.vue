@@ -8,7 +8,6 @@ const fetchUserProfile = async () => {
   try {
     await checkAuth();
     user.value = currentUser.value;
-    console.log('User profile:', user.value);
   } catch (error) {
     console.error('Error fetching user profile:', error);
   }
@@ -18,7 +17,6 @@ onMounted(fetchUserProfile);
 
 watch(currentUser, (newValue) => {
   user.value = newValue;
-  console.log('Current user updated:', user.value);
 });
 </script>
 

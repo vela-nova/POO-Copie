@@ -7,6 +7,7 @@ import Profile from '@/components/Profile.vue';
 import Manager from '@/components/Manager.vue';
 import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated, checkAuth } from '@/services/authService'
+import WorkingTimes from '@/components/WorkingTimes.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -49,6 +50,12 @@ const router = createRouter({
       path: '/change-password',
       name: 'ChangePassword',
       component: ChangePassword,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/workingTimes',
+      name: 'WorkingTimes',
+      component: WorkingTimes,
       meta: { requiresAuth: true }
     }
   ]

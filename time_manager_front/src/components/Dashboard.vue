@@ -16,7 +16,6 @@ const isLoading = ref(true);
 onMounted(async () => {
   try {
     const data = await getUsers();
-    console.log('Users loaded:', data);
     users.value = data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -33,19 +32,19 @@ onMounted(async () => {
       Chargement en cours...
     </div>
     <template v-else>
-      <div id="raw-1">
-        <div id="raw-1-col-1">
+      <div class="row">
+        <div class="col">
           <WorkingTimesChart />
         </div>
-        <div id="raw-1-col-2">
+        <div class="col">
           <ClockManager />
         </div>
       </div>
-      <div id="raw-2">
-        <div id="raw-2-col-1">
+      <div class="row">
+        <div class="col">
           <HourWeekWork :userId="userId" :isAdmin="isAdmin" :users="users"/>
         </div>
-        <div id="raw-2-col-2">
+        <div class="col">
           <MonthWeekWork :userId="userId" :isAdmin="isAdmin" :users="users" />
         </div>
       </div>
@@ -54,61 +53,39 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-#raw-1 {
+.row {
   display: flex;
   flex-direction: row;
-  width: 100%-2px;
-  height: 50%;
-}
-
-#raw-1-col-1 {
-  display: flex;
-  width: 40%;
-  min-height: 80%;
-  background-color: #D9D9D9;
-  margin: auto;
-  border-radius: 35px;
-  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.365);
-}
-
-#raw-1-col-2 {
-  display: flex;
-  width: 40%;
-  min-height: 80%;
-  background-color: #D9D9D9;
-  border-radius: 35px;
+  justify-content: center;
   align-items: center;
-  margin: 0 6% 0 0;
-  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.365);
-}
-
-#raw-2 {
-  display: flex;
-  flex-direction: row;  
-  width: 100%-2px;
+  width: calc(100% - 2px);
   height: 50%;
-  margin: 50px 0 0 0;
+  margin-top: 3em;
 }
 
-#raw-2-col-1 {
+.col {
   display: flex;
   width: 40%;
-  min-height: 80%;
-  background-color: #D9D9D9;
+  background-color: white;
   margin: auto;
   border-radius: 35px;
   box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.365);
 }
 
-#raw-2-col-2 {
-  display: flex;
-  width: 40%;
-  min-height: 80%;
-  background-color: #D9D9D9;
-  margin: auto;
-  border-radius: 35px;
-  margin: 0 6% 0 0;
-  box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.365);
+.row:first-of-type>.col{
+  height: 35em;
+}
+
+@media (max-width: 1000px) {
+  .row {
+    flex-direction: column;
+    margin-top: auto;
+  }
+  .col{
+    width: 80%;
+    margin-top: 3em;
+    height: fit-content !important;
+  }
 }
 .loading {
   display: flex;

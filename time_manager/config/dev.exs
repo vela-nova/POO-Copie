@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :time_manager, Timemanager.Repo,
-  username: "parttime",
-  password: "PartTime",
-  hostname: "localhost",
-  database: "time_manager_dev",
+  username: "postgres",
+  password: "S1Ib7{6m*BZq",
+  hostname: "51.210.149.235",
+  database: "time_manager_prod",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -17,15 +17,12 @@ config :time_manager, Timemanager.Repo,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :time_manager, TimemanagerWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
   secret_key_base: "BQRy4pBd0Lwl4IBPx6Au/iiziW1zW+S05QVSDeZ0bLH7K2hOHPZgZrat8HJTxp0P",
   watchers: []
-
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

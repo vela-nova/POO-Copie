@@ -35,9 +35,7 @@ const workingTimeOptions = {
 
 const fetchUserCount = async () => {
   try {
-    console.log('Fetching user count');
     const users = await getUsers();
-    console.log('User count response:', users);
     userCountData.value = {
       labels: ['Utilisateurs'],
       datasets: [{
@@ -54,9 +52,7 @@ const fetchUserCount = async () => {
 const fetchUserPresence = async () => {
   if (userId.value) {
     try {
-      console.log(`Fetching user presence for userId: ${userId.value}`);
       const clocks = await getClocks(userId.value);
-      console.log('User presence response:', clocks);
       userPresenceData.value = {
         labels: clocks.map(clock => new Date(clock.time).toLocaleDateString()),
         datasets: [{
@@ -75,16 +71,13 @@ const fetchUserPresence = async () => {
 const fetchWorkingTime = async () => {
   if (userId.value) {
     try {
-      console.log(`Fetching working time for userId: ${userId.value}`);
       const workingTimes = await getWorkingTimesUserId(userId.value);
-      console.log('Working time response:', workingTimes);
       
       const calculatedData = workingTimes.map(wt => {
         const start = new Date(wt.start);
         const end = new Date(wt.end);
         return (end - start) / (1000 * 60 * 60);
       });
-      console.log('Calculated working hours:', calculatedData);
 
       workingTimeData.value = {
         labels: workingTimes.map(wt => {
@@ -116,19 +109,16 @@ const fetchAllData = async () => {
     await fetchUserPresence();
     await fetchWorkingTime();
   } else {
-    console.log('No userId available, skipping user-specific data fetch');
     userPresenceData.value = null;
     workingTimeData.value = null;
   }
 };
 
 onMounted(() => {
-  console.log('ChartManager mounted, userId:', userId.value);
   fetchAllData();
 });
 
 watch(userId, (newUserId) => {
-  console.log('userId changed:', newUserId);
   userIdRef.value = newUserId;
   fetchAllData();
 });

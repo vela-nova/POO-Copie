@@ -1,19 +1,6 @@
 import api from './api';
 
-export async function getWorkingTimes(start, end) {
-  const userId = localStorage.getItem('userId');
-  console.log('Fetching working times with:', { userId, start, end });
-  try {
-    const response = await api.get(`/workingtime/${userId}`, {
-      params: { start, end }
-    });
-    console.log('API Response:', response);
-    return response.data.data;
-  } catch (error) {
-    console.error('Error fetching working times:', error);
-    throw error;
-  }
-}
+
 export const getWorkingTimesUserId = async (userId, start, end) => {
   try {
     const response = await api.get(`/workingtime/${userId}`,

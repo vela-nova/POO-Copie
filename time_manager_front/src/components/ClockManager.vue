@@ -6,8 +6,6 @@ const userId = ref(localStorage.getItem('userId'));
 const isActive = ref(localStorage.getItem('isActive') === 'true');
 const clockStatus = ref(!isActive.value);
 
-console.log('userId:', userId.value);
-console.log('isActive initial:', isActive.value);
 
 onMounted(() => {
   // Assurez-vous que l'état initial est correctement défini
@@ -47,7 +45,7 @@ const refresh = () => {
 
 <template>
   <div id="clockManager">
-    <h1 v-if="userId">Status of employee: {{ userId }}</h1>
+    <h1 v-if="userId">Status of employee : {{ userId }}</h1>
     <button id="active-button" @click="clock" :class="{ 'active': isActive }">
       <span class="button-text">{{ isActive ? 'Active' : 'Inactive' }}</span>
     </button>
@@ -57,12 +55,16 @@ const refresh = () => {
 <style scoped>
 #clockManager {
   width: 100%;
-  margin: 0 auto;
+  height: 100%;
+  margin: auto;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
   text-align: center;
   align-items: center;
+}
+#clockManager>h1 {
+  margin-bottom: 0;
 }
 
 #active-button {
@@ -77,6 +79,13 @@ const refresh = () => {
   border: 8px solid #ef1919;
   position: relative;
   overflow: hidden;
+  margin: auto;
+}
+
+@media (max-width: 1000px) {
+  #active-button {
+    margin: 2em;
+  }
 }
 
 #active-button::before {
@@ -103,11 +112,7 @@ const refresh = () => {
 .button-text {
   position: relative;
   z-index: 1;
-  color: white;
   transition: color 0.3s ease;
 }
 
-#active-button:not(.active) .button-text {
-  color: white;
-}
 </style>
